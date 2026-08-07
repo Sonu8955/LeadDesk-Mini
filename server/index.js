@@ -119,7 +119,32 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+app.get("/api/setup-admin", async (req, res) => {
+  try {
+    const bcrypt = require("bcryptjs");
+    const Admin = require("./models/Admin");
 
+    const existingAdmin = await Admin.findOne({
+      email: "admin@gmail.com",
+    });
+
+    if (existingAdmin) {
+      return res.json({ message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+
+    await Admin.create({
+      email: "admin@gmail.com",
+      password: hashedPassword,
+    });
+
+    res.json({ message: "Admin created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to create admin" });
+  }
+});
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
