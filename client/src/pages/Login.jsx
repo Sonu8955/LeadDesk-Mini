@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Login.css";
 
 function Login() {
@@ -7,19 +8,36 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    if (
-      email === "admin@gmail.com" &&
-      password === "admin123"
-    ) {
+    try {
+      const response = await axios.post(
+        "https://leaddesk-mini-6ufe.onrender.com/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
+
+      // Backend se mila JWT token save karo
+      localStorage.setItem("token", response.data.token);
       localStorage.setItem("isAdmin", "true");
+
       alert("Login Successful");
       navigate("/admin");
-    } else {
-      alert("Invalid Email or Password");
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.message ||
+          "Invalid Email or Password"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,8 +63,8 @@ function Login() {
             required
           />
 
-          <button type="submit">
-            Login
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
