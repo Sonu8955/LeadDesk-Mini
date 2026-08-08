@@ -21,7 +21,10 @@ function App() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/leads", form);
+      await axios.post(
+  "https://leaddesk-mini-6ufe.onrender.com/api/leads",
+  form
+);
 
       alert("🎉 Lead Submitted Successfully!");
 
